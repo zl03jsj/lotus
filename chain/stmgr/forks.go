@@ -1010,7 +1010,9 @@ func upgradeActorsV3Common(
 	root cid.Cid, epoch abi.ChainEpoch, ts *types.TipSet,
 	config nv10.Config,
 ) (cid.Cid, error) {
-	buf := bufbstore.NewTieredBstore(sm.cs.Blockstore(), bstore.NewTemporarySync())
+	buf := bufbstore.NewTieredBstore(
+		bstore.NewReadCache(sm.cs.Blockstore(), bstore.NewTemporarySync()),
+		bstore.NewTemporarySync())
 	store := store.ActorStore(ctx, buf)
 
 	// Load the state root.

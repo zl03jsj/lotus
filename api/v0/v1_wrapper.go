@@ -712,5 +712,5 @@ func (c *WrapperV1) PaychVoucherSubmit(ctx context.Context, ch address.Address, 
 }
 
 func (c *WrapperV1) CreateBackup(ctx context.Context, fpath string) error {
-	return c.Internal.CreayyyateBackup(ctx, fpath)
+	return c.Internal.CreateBackup(ctx, fpath)
 }

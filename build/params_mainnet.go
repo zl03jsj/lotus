@@ -53,8 +53,8 @@ const UpgradeOrangeHeight = 336458
 // 2020-12-22T02:00:00Z
 const UpgradeClausHeight = 343200
 
-// 2021-03-04T00:00:30Z
-var UpgradeActorsV3Height = abi.ChainEpoch(550321)
+// FOR TESTING ONLY: Mon Mar  1 14:30:00 2021 PST
+var UpgradeActorsV3Height = abi.ChainEpoch(544380)
 
 func init() {
 	policy.SetConsensusMinerMinPower(abi.NewStoragePower(10 << 40))

@@ -23,7 +23,7 @@ import (
 	"github.com/filecoin-project/lotus/lib/addrutil"
 )
 
-var netCmd = &cli.Command{
+var NetCmd = &cli.Command{
 	Name:  "net",
 	Usage: "Manage P2P Network",
 	Subcommands: []*cli.Command{

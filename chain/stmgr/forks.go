@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"os"
 	"runtime"
 	"sort"
 	"sync"
@@ -126,6 +127,26 @@ func (ml migrationLogger) Log(level rt.LogLevel, msg string, args ...interface{}
 func DefaultUpgradeSchedule() UpgradeSchedule {
 	var us UpgradeSchedule
 
+	disablePreMigrations := os.Getenv("DISABLE_PRE_MIGRATIONS") != ""
+	if disablePreMigrations {
+		log.Warnf("pre-migrations disabled")
+	}
+
+	var v3PreMigration []PreMigration
+	if !disablePreMigrations {
+		v3PreMigration = []PreMigration{{
+			PreMigration:    PreUpgradeActorsV3,
+			StartWithin:     120,
+			DontStartWithin: 60,
+			StopWithin:      35,
+		}, {
+			PreMigration:    PreUpgradeActorsV3,
+			StartWithin:     30,
+			DontStartWithin: 15,
+			StopWithin:      5,
+		}}
+	}
+
 	updates := []Upgrade{{
 		Height:    build.UpgradeBreezeHeight,
 		Network:   network.Version1,
@@ -172,21 +193,11 @@ func DefaultUpgradeSchedule() UpgradeSchedule {
 		Network:   network.Version9,
 		Migration: nil,
 	}, {
-		Height:    build.UpgradeActorsV3Height,
-		Network:   network.Version10,
-		Migration: UpgradeActorsV3,
-		PreMigrations: []PreMigration{{
-			PreMigration:    PreUpgradeActorsV3,
-			StartWithin:     120,
-			DontStartWithin: 60,
-			StopWithin:      35,
-		}, {
-			PreMigration:    PreUpgradeActorsV3,
-			StartWithin:     30,
-			DontStartWithin: 15,
-			StopWithin:      5,
-		}},
-		Expensive: true,
+		Height:        build.UpgradeActorsV3Height,
+		Network:       network.Version10,
+		Migration:     UpgradeActorsV3,
+		PreMigrations: v3PreMigration,
+		Expensive:     true,
 	}}
 
 	for _, u := range updates {

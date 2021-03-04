@@ -318,7 +318,7 @@ var Commands = []*cli.Command{
 	WithCategory("developer", waitApiCmd),
 	WithCategory("developer", fetchParamCmd),
 	WithCategory("network", NetCmd),
-	WithCategory("network", syncCmd),
+	WithCategory("network", SyncCmd),
 	pprofCmd,
 	VersionCmd,
 }

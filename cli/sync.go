@@ -15,7 +15,7 @@ import (
 	"github.com/filecoin-project/lotus/build"
 )
 
-var syncCmd = &cli.Command{
+var SyncCmd = &cli.Command{
 	Name:  "sync",
 	Usage: "Inspect or interact with the chain syncer",
 	Subcommands: []*cli.Command{

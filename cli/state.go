@@ -41,7 +41,7 @@ import (
 	"github.com/filecoin-project/lotus/chain/types"
 )
 
-var stateCmd = &cli.Command{
+var StateCmd = &cli.Command{
 	Name:  "state",
 	Usage: "Interact with and query filecoin chain state",
 	Flags: []cli.Flag{

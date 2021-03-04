@@ -312,7 +312,7 @@ var Commands = []*cli.Command{
 	WithCategory("basic", paychCmd),
 	WithCategory("developer", authCmd),
 	WithCategory("developer", mpoolCmd),
-	WithCategory("developer", stateCmd),
+	WithCategory("developer", StateCmd),
 	WithCategory("developer", chainCmd),
 	WithCategory("developer", logCmd),
 	WithCategory("developer", waitApiCmd),

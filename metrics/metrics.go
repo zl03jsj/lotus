@@ -59,6 +59,11 @@ var (
 	APIRequestDuration                  = stats.Float64("api/request_duration_ms", "Duration of API requests", stats.UnitMilliseconds)
 	VMFlushCopyDuration                 = stats.Float64("vm/flush_copy_ms", "Time spent in VM Flush Copy", stats.UnitMilliseconds)
 	VMFlushCopyCount                    = stats.Int64("vm/flush_copy_count", "Number of copied objects", stats.UnitDimensionless)
+	SplitstoreMiss                      = stats.Int64("splitstore/miss", "Number of misses in hotstre access", stats.UnitDimensionless)
+	SplitstoreCompactionTimeSeconds     = stats.Float64("splitstore/compaction_time", "Compaction time in seconds", stats.UnitSeconds)
+	SplitstoreCompactionHot             = stats.Int64("splitstore/hot", "Number of hot blocks in last compaction", stats.UnitDimensionless)
+	SplitstoreCompactionCold            = stats.Int64("splitstore/cold", "Number of cold blocks in last compaction", stats.UnitDimensionless)
+	SplitstoreCompactionDead            = stats.Int64("splitstore/dead", "Number of dead blocks in last compaction", stats.UnitDimensionless)
 )
 
 var (
@@ -178,6 +183,26 @@ var (
 		Measure:     VMFlushCopyCount,
 		Aggregation: view.Sum(),
 	}
+	SplitstoreMissView = &view.View{
+		Measure:     SplitstoreMiss,
+		Aggregation: view.Count(),
+	}
+	SplitstoreCompactionTimeSecondsView = &view.View{
+		Measure:     SplitstoreCompactionTimeSeconds,
+		Aggregation: view.LastValue(),
+	}
+	SplitstoreCompactionHotView = &view.View{
+		Measure:     SplitstoreCompactionHot,
+		Aggregation: view.LastValue(),
+	}
+	SplitstoreCompactionColdView = &view.View{
+		Measure:     SplitstoreCompactionCold,
+		Aggregation: view.Sum(),
+	}
+	SplitstoreCompactionDeadView = &view.View{
+		Measure:     SplitstoreCompactionDead,
+		Aggregation: view.Sum(),
+	}
 )
 
 // DefaultViews is an array of OpenCensus views for metric gathering purposes
@@ -207,6 +232,11 @@ var DefaultViews = func() []*view.View {
 		APIRequestDurationView,
 		VMFlushCopyCountView,
 		VMFlushCopyDurationView,
+		SplitstoreMissView,
+		SplitstoreCompactionTimeSecondsView,
+		SplitstoreCompactionHotView,
+		SplitstoreCompactionColdView,
+		SplitstoreCompactionDeadView,
 	}
 	views = append(views, blockstore.DefaultViews...)
 	views = append(views, rpcmetrics.DefaultViews...)

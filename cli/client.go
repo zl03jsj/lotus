@@ -1120,12 +1120,12 @@ var clientShowDealsCmd = &cli.Command{
 	Name:  "show-deals",
 	Usage: "Show storage deals",
 	Action: func(cctx *cli.Context) error {
-		//api, closer, err := GetFullNodeAPI(cctx)
-		//if err != nil {
-		//	return err
-		//}
-		//defer closer()
-		var api api.FullNode
+		api, closer, err := GetFullNodeAPI(cctx)
+		if err != nil {
+			return err
+		}
+		defer closer()
+		//var api api.FullNode
 
 		ctx := ReqContext(cctx)
 		//afmt := NewAppFmt(cctx.App)

@@ -2959,7 +2959,8 @@ Response:
     "Behind": 42
   },
   "PeerStatus": {
-    "PeersToPublish": 123
+    "PeersToPublishMsgs": 123,
+    "PeersToPublishBlocks": 123
   }
 }
 ```

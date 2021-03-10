@@ -569,7 +569,7 @@ type FullNode interface {
 	// MethodGroup: Node
 	// These methods are general node management and status commands
 
-	NodeStatus(context.Context) (NodeStatus, error)
+	NodeStatus(ctx context.Context, inclChainStatus bool) (NodeStatus, error)
 
 	// CreateBackup creates node backup onder the specified file name. The
 	// method requires that the lotus daemon is running with the

@@ -139,11 +139,6 @@ type Pubsub struct {
 	RemoteTracer          string
 }
 
-type Chainstore struct {
-	EnableSplitstore bool
-	Splitstore       Splitstore
-}
-
 type Splitstore struct {
 	HotStoreType         string
 	TrackingStoreType    string
@@ -156,15 +151,6 @@ type Splitstore struct {
 type Chainstore struct {
 	EnableSplitstore bool
 	Splitstore       Splitstore
-}
-
-type Splitstore struct {
-	HotStoreType         string
-	TrackingStoreType    string
-	MarkSetType          string
-	EnableFullCompaction bool
-	EnableGC             bool // EXPERIMENTAL
-	Archival             bool
 }
 
 // // Full Node

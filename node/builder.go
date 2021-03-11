@@ -408,7 +408,7 @@ var MinerNode = Options(
 	Override(new(dtypes.StorageDealFilter), modules.BasicDealFilter(nil)),
 	Override(new(storagemarket.StorageProvider), modules.StorageProvider),
 	Override(new(*storageadapter.DealPublisher), storageadapter.NewDealPublisher(nil, storageadapter.PublishMsgConfig{})),
-	Override(new(storagemarket.StorageProviderNode), storageadapter.NewProviderNodeAdapter(nil)),
+	Override(new(storagemarket.StorageProviderNode), storageadapter.NewProviderNodeAdapter(nil, nil)),
 	Override(HandleMigrateProviderFundsKey, modules.HandleMigrateProviderFunds),
 	Override(HandleDealsKey, modules.HandleDeals),
 
@@ -508,6 +508,7 @@ func ConfigCommon(cfg *config.Common) Option {
 		Override(AddrsFactoryKey, lp2p.AddrsFactory(
 			cfg.Libp2p.AnnounceAddresses,
 			cfg.Libp2p.NoAnnounceAddresses)),
+		Override(new(dtypes.MetadataDS), modules.Datastore(cfg.Backup.DisableMetadataLog)),
 	)
 }
 
@@ -567,7 +568,7 @@ func ConfigStorageMiner(c interface{}) Option {
 			Period:         time.Duration(cfg.Dealmaking.PublishMsgPeriod),
 			MaxDealsPerMsg: cfg.Dealmaking.MaxDealsPerPublishMsg,
 		})),
-		Override(new(storagemarket.StorageProviderNode), storageadapter.NewProviderNodeAdapter(&cfg.Fees)),
+		Override(new(storagemarket.StorageProviderNode), storageadapter.NewProviderNodeAdapter(&cfg.Fees, &cfg.Dealmaking)),
 
 		Override(new(sectorstorage.SealerConfig), cfg.Storage),
 		Override(new(*storage.AddressSelector), modules.AddressSelector(&cfg.Addresses)),
@@ -601,7 +602,6 @@ func Repo(r repo.Repo) Option {
 		return Options(
 			Override(new(repo.LockedRepo), modules.LockedRepo(lr)), // module handles closing
 
-			Override(new(dtypes.MetadataDS), modules.Datastore),
 			Override(new(dtypes.UniversalBlockstore), modules.UniversalBlockstore),
 
 			If(cfg.EnableSplitstore,

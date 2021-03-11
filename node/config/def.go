@@ -13,6 +13,7 @@ import (
 // Common is common config between full node and miner
 type Common struct {
 	API    API
+	Backup Backup
 	Libp2p Libp2p
 	Pubsub Pubsub
 }
@@ -28,6 +29,10 @@ type FullNode struct {
 }
 
 // // Common
+
+type Backup struct {
+	DisableMetadataLog bool
+}
 
 // StorageMiner is a miner config
 type StorageMiner struct {
@@ -55,6 +60,9 @@ type DealmakingConfig struct {
 	// The maximum number of deals to include in a single PublishStorageDeals
 	// message
 	MaxDealsPerPublishMsg uint64
+	// The maximum collateral that the provider will put up against a deal,
+	// as a multiplier of the minimum collateral bound
+	MaxProviderCollateralMultiplier uint64
 
 	Filter          string
 	RetrievalFilter string
@@ -92,6 +100,16 @@ type MinerFeeConfig struct {
 type MinerAddressConfig struct {
 	PreCommitControl []string
 	CommitControl    []string
+	TerminateControl []string
+
+	// DisableOwnerFallback disables usage of the owner address for messages
+	// sent automatically
+	DisableOwnerFallback bool
+	// DisableWorkerFallback disables usage of the worker address for messages
+	// sent automatically, if control addresses are configured.
+	// A control address that doesn't have enough funds will still be chosen
+	// over the worker address if this flag is set.
+	DisableWorkerFallback bool
 }
 
 // API contains configs for API endpoint
@@ -115,9 +133,24 @@ type Libp2p struct {
 }
 
 type Pubsub struct {
-	Bootstrapper bool
-	DirectPeers  []string
-	RemoteTracer string
+	Bootstrapper          bool
+	DirectPeers           []string
+	IPColocationWhitelist []string
+	RemoteTracer          string
+}
+
+type Chainstore struct {
+	EnableSplitstore bool
+	Splitstore       Splitstore
+}
+
+type Splitstore struct {
+	HotStoreType         string
+	TrackingStoreType    string
+	MarkSetType          string
+	EnableFullCompaction bool
+	EnableGC             bool // EXPERIMENTAL
+	Archival             bool
 }
 
 type Chainstore struct {
@@ -240,9 +273,10 @@ func DefaultStorageMiner() *StorageMiner {
 			ConsiderUnverifiedStorageDeals: true,
 			PieceCidBlocklist:              []cid.Cid{},
 			// TODO: It'd be nice to set this based on sector size
-			ExpectedSealDuration:  Duration(time.Hour * 24),
-			PublishMsgPeriod:      Duration(time.Hour),
-			MaxDealsPerPublishMsg: 8,
+			ExpectedSealDuration:            Duration(time.Hour * 24),
+			PublishMsgPeriod:                Duration(time.Hour),
+			MaxDealsPerPublishMsg:           8,
+			MaxProviderCollateralMultiplier: 2,
 		},
 
 		Fees: MinerFeeConfig{

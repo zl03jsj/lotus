@@ -79,7 +79,7 @@ const (
 type Config struct {
 	// TrackingStore is the type of tracking store to use.
 	//
-	// Supported values are: "bolt" (default if omitted).
+	// Supported values are: "bolt" (default if omitted), "mem" (for tests and readonly access).
 	TrackingStoreType string
 
 	// MarkSetType is the type of mark set to use.
@@ -210,7 +210,7 @@ func (s *SplitStore) Get(cid cid.Cid) (blocks.Block, error) {
 
 	case bstore.ErrNotFound:
 		blk, err = s.cold.Get(cid)
-		if err != nil {
+		if err == nil {
 			stats.Record(context.Background(), metrics.SplitstoreMiss.M(1))
 		}
 		return blk, err
@@ -229,7 +229,7 @@ func (s *SplitStore) GetSize(cid cid.Cid) (int, error) {
 
 	case bstore.ErrNotFound:
 		size, err = s.cold.GetSize(cid)
-		if err != nil {
+		if err == nil {
 			stats.Record(context.Background(), metrics.SplitstoreMiss.M(1))
 		}
 		return size, err
@@ -710,6 +710,8 @@ func (s *SplitStore) compactSimple(curTs *types.TipSet) error {
 		return xerrors.Errorf("error syncing tracker: %w", err)
 	}
 
+	s.gcHotstore()
+
 	err = s.setBaseEpoch(coldEpoch)
 	if err != nil {
 		return xerrors.Errorf("error saving base epoch: %w", err)
@@ -793,6 +795,19 @@ func (s *SplitStore) purgeBlocks(cids []cid.Cid) error {
 
 func (s *SplitStore) purgeTracking(cids []cid.Cid) error {
 	return s.purgeBatch(cids, s.tracker.DeleteBatch)
+}
+
+func (s *SplitStore) gcHotstore() {
+	if gc, ok := s.hot.(interface{ CollectGarbage() error }); ok {
+		log.Infof("garbage collecting hotstore")
+		startGC := time.Now()
+		err := gc.CollectGarbage()
+		if err != nil {
+			log.Warnf("error garbage collecting hotstore: %s", err)
+		} else {
+			log.Infow("garbage collection done", "took", time.Since(startGC))
+		}
+	}
 }
 
 func (s *SplitStore) compactFull(curTs *types.TipSet) error {
@@ -1004,6 +1019,8 @@ func (s *SplitStore) compactFull(curTs *types.TipSet) error {
 	if err != nil {
 		return xerrors.Errorf("error syncing tracker: %w", err)
 	}
+
+	s.gcHotstore()
 
 	err = s.setBaseEpoch(coldEpoch)
 	if err != nil {

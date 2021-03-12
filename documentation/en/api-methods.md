@@ -80,6 +80,7 @@
   * [MpoolBatchPush](#MpoolBatchPush)
   * [MpoolBatchPushMessage](#MpoolBatchPushMessage)
   * [MpoolBatchPushUntrusted](#MpoolBatchPushUntrusted)
+  * [MpoolCheckMessages](#MpoolCheckMessages)
   * [MpoolClear](#MpoolClear)
   * [MpoolGetConfig](#MpoolGetConfig)
   * [MpoolGetNonce](#MpoolGetNonce)
@@ -1921,6 +1922,21 @@ MpoolBatchPushUntrusted batch pushes a signed message to mempool from untrusted 
 
 
 Perms: write
+
+Inputs:
+```json
+[
+  null
+]
+```
+
+Response: `null`
+
+### MpoolCheckMessages
+MpoolCheckMessages performs logical checks on a batch of messages
+
+
+Perms: read
 
 Inputs:
 ```json
